@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from langchain_core.messages import HumanMessage, AIMessage
 
-# Importamos el grafo compilado y el estado
 from agent import app, AgentState
 
 

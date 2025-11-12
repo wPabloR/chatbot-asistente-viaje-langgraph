@@ -15,7 +15,6 @@ def clima_destino(ciudad: str):
 
         print(f"🌍 Buscando coordenadas para: {ciudad}")
         
-        # 🔹 1️⃣ Obtener coordenadas desde Nominatim
         geo_url = "https://nominatim.openstreetmap.org/search"
         geo_params = {
             "q": ciudad,
@@ -36,7 +35,6 @@ def clima_destino(ciudad: str):
 
         print(f"✅ Coordenadas encontradas: {nombre_ciudad} → lat={lat}, lon={lon}")
 
-        # 🔹 2️⃣ Consultar OpenWeather por coordenadas (más preciso)
         weather_url = "http://api.openweathermap.org/data/2.5/weather"
         weather_params = {
             "lat": lat,
@@ -99,7 +97,6 @@ def recomendar_actividades(ciudad: str, interes: str) -> str:
     lugares_encontrados = []
 
     try:
-        # Primero obtener coordenadas de la ciudad
         geo_response = requests.get(
             f"https://nominatim.openstreetmap.org/search?q={ciudad}&format=json&limit=1",
             headers={"User-Agent": "TravelAssistant/1.0"},
@@ -112,11 +109,9 @@ def recomendar_actividades(ciudad: str, interes: str) -> str:
             lon = geo_data['lon']
             print(f"📍 Coordenadas obtenidas: {lat}, {lon}")
 
-            # Buscar lugares por cada categoría
-            for categoria in categorias[:3]:  # Limitar a 3 categorías para no saturar
+            for categoria in categorias[:3]: 
                 print(f"🔍 Buscando: {categoria}")
-                
-                # Consultar Overpass API (gratuita, sin API key)
+
                 overpass_query = f"""
                 [out:json][timeout:25];
                 (
@@ -140,13 +135,11 @@ def recomendar_actividades(ciudad: str, interes: str) -> str:
                     for elemento in elementos:
                         if 'tags' in elemento and 'name' in elemento['tags']:
                             nombre = elemento['tags']['name']
-                            # Evitar duplicados y nombres genéricos
                             if (nombre not in lugares_encontrados and 
                                 len(nombre) > 3 and 
                                 nombre.lower() not in ['cafe', 'restaurant', 'bar', 'park']):
                                 lugares_encontrados.append(nombre)
-                                
-                                # Limitar a 12 lugares máximo
+
                                 if len(lugares_encontrados) >= 12:
                                     break
                     
@@ -160,10 +153,9 @@ def recomendar_actividades(ciudad: str, interes: str) -> str:
         print(f"❌ Error general: {e}")
         return f"Error al buscar actividades en {ciudad}: {e}"
 
-    # Formatear resultados
     if lugares_encontrados:
-        lugares_unicos = list(dict.fromkeys(lugares_encontrados))  # Eliminar duplicados
-        lugares_formateados = "\n".join([f"• {lugar}" for lugar in lugares_unicos[:10]])  # Máximo 10
+        lugares_unicos = list(dict.fromkeys(lugares_encontrados)) 
+        lugares_formateados = "\n".join([f"• {lugar}" for lugar in lugares_unicos[:10]]) 
         
         return f"""
 Recomendaciones de {interes} en {ciudad}:
@@ -191,9 +183,6 @@ No se encontraron lugares específicos de {interes} en {ciudad}
 💡 Tip: Intenta con un interés diferente o explora la ciudad para descubrir lugares únicos.
 """
 
-# =======================
-# 📦 EXPORTAR HERRAMIENTAS - CORREGIDO
-# =======================
 agente_tools = [clima_destino.func, recomendar_actividades.func]
 
 
